@@ -12,7 +12,7 @@ class FuelConsumption extends StatefulWidget {
 }
 
 class _FuelConsumptionState extends State<FuelConsumption> {
-  String dist = '';
+  String result = '';
   String curren = 'Rupees';
   TextEditingController calcdistance = new TextEditingController();
   TextEditingController calcavg = new TextEditingController();
@@ -56,40 +56,84 @@ class _FuelConsumptionState extends State<FuelConsumption> {
               SizedBox(
                 height: 10,
               ),
-              TextField(
-                keyboardType: TextInputType.number,
-                controller: calcprice,
-                decoration: InputDecoration(
-                    hintText: 'eg. 50',
-                    labelText: 'Price',
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10))),
+              Row(
+                children: <Widget>[
+                  SizedBox(
+                    width: 200,
+                    child: TextField(
+                      keyboardType: TextInputType.number,
+                      controller: calcprice,
+                      decoration: InputDecoration(
+                          hintText: 'eg. 50',
+                          labelText: 'Price',
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10))),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 30,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                    child: DropdownButton<String>(
+                      items: ['Rupees', 'Dirham', 'Dollars'].map((String val) {
+                        return DropdownMenuItem<String>(
+                            value: val,
+                            child: Text(
+                              val,
+                              textScaleFactor: 1.5,
+                            ));
+                      }).toList(),
+                      onChanged: (String val) {
+                        setState(() {
+                          curren = val;
+                        });
+                      },
+                      value: curren,
+                    ),
+                  ),
+                  SizedBox(height: 5)
+                ],
               ),
-              SizedBox(
-                height: 10,
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    flex: 1,
+                    child: RaisedButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      child: Text('Calculate',
+                          style: TextStyle(color: Colors.white),
+                          textScaleFactor: 1.5),
+                      color: Theme.of(context).primaryColorDark,
+                      onPressed: () {
+                        setState(() {
+                          result = _calculate();
+                        });
+                      },
+                    ),
+                  ),
+                  SizedBox(width: 5),
+                  Expanded(
+                    flex: 1,
+                    child: RaisedButton(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text('Reset',
+                          style: TextStyle(color: Colors.blueAccent),
+                          textScaleFactor: 1.5),
+                      color: Colors.grey[350],
+                      onPressed: () {
+                        _reset();
+                      },
+                    ),
+                  ),
+                ],
               ),
-              DropdownButton<String>(
-                items: ['Rupees', 'Dirham', 'Dollars'].map((String val) {
-                  return DropdownMenuItem<String>(value: val, child: Text(val,textScaleFactor: 1.5,));
-                }).toList(),
-                onChanged: (String val) {
-                  setState(() {
-                    curren = val;
-                  });
-                },
-                value: curren,
-              ),
-              RaisedButton(
-                child: Text('Calculate',style: TextStyle(color: Colors.white), textScaleFactor: 1.5),
-                color: Theme.of(context).primaryColorDark,
-                onPressed: () {
-                  setState(() {
-                    dist = _calculate();
-                  });
-                },
-              ),
+              SizedBox(height: 20),
               Text(
-                dist,
+                result,
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               )
             ],
@@ -107,7 +151,17 @@ class _FuelConsumptionState extends State<FuelConsumption> {
     String _result = 'The total cost of your trip is ' +
         _total.toStringAsFixed(2) +
         ' ' +
-        curren;
+        curren +
+        '.';
     return _result;
+  }
+
+  _reset() {
+    setState(() {
+      calcdistance.text = '';
+      calcprice.text = '';
+      calcavg.text = '';
+      curren = 'Rupees';
+    });
   }
 }
